@@ -5,6 +5,29 @@
 - 给定配对的文本和图像，预测对应的情感标签。
 - 三分类任务：positive, neutral, negative。
 
+## 库
+1. torch: 本实验使用PyTorch深度学习框架.
+2. os: 提供操作系统相关的功能，如路径操作和文件读写。
+3. json: 用于处理JSON数据。
+4. numpy: 用于处理数值计算和数组操作。
+5. PIL: 用于图像处理和操作。
+6. argparse: 用于解析命令行参数。
+7. chardet: 用于自动检测文本的编码格式。
+8. warnings: 用于忽略警告信息。
+9. logging: 用于设置日志输出级别。
+10. train_test_split: 用于将数据集划分为训练集和验证集。
+11. AdamW: 提供AdamW优化器。
+12. tqdm: 用于显示进度条。
+13. nn: 提供神经网络相关的功能和模块。
+14. AutoModel: 提供预训练的BERT模型。
+15. resnet50: 提供预训练的ResNet-50模型。
+16. DataLoader: 用于加载训练、验证和测试数据的数据加载器。
+17. Dataset: 提供自定义数据集的基类。
+18. pad_sequence: 用于对序列进行填充。
+19. AutoTokenizer: 提供自动选择和加载预训练的分词器。
+20. transforms: 提供图像预处理和转换。
+21. accuracy_score: 用于计算准确率指标。
+
 ## 安装指南
 
 ```
