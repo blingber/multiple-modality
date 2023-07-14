@@ -43,24 +43,34 @@ def formating(path, dir, out_path):
                     except:
                         print('not is0-8859-1', guid)  # 如果无法解码，则输出错误信息并跳过该行数据
                         continue
-            text = text.strip().strip('\n').strip(' ').strip('\r')  
+            text = text.strip().strip('\n').strip(' ').strip('\r') 
             data.append({'guid': guid, 'label': label, 'text': text})  # 将处理后的数据添加到列表中
     with open(out_path, 'w') as ff:  # 打开输出文件
         json.dump(data, ff)  # 将数据以JSON格式写入文件
 
 # 将数据返回元组列表
-def listing(path):
+def listing(way,path):
     data = []
     with open(path) as f:
         json_file = json.load(f)
         for d in json_file:
             guid, label, text = d['guid'], d['label'], d['text']
-            if guid == 'guid': 
-               continue
-            img_path = os.path.join(data_dir, (guid + '.jpg'))
-            img = Image.open(img_path)
-            img.load()
-            data.append((guid, text, img, label))
+            if guid == 'guid': #标题行
+                continue
+            if way=='text':
+                img=Image.new(mode='RGB', size=(224, 224), color=(0, 0, 0))
+                data.append((guid, text, img, label))
+            elif way=='img':
+                text = ''
+                img_path = os.path.join(data_dir, (guid + '.jpg'))
+                img = Image.open(img_path)
+                img.load()
+                data.append((guid, text, img, label))
+            else:
+                img_path = os.path.join(data_dir, (guid + '.jpg'))
+                img = Image.open(img_path)
+                img.load()
+                data.append((guid, text, img, label))
         f.close()
     return data
 
@@ -279,7 +289,7 @@ class Trainer():
             val_loader (DataLoader): 验证数据的数据加载器
         返回:
             val_loss (float): 验证损失
-            metrics: (float): 验证指标值（如准确率）
+            metrics: (float): 验证指标值
         """
         self.model.eval()  # 设置模型为评估模式
         t_labels = []  # 真实标签列表
@@ -321,12 +331,18 @@ parser.add_argument('--lr', default=5e-5, type=float)
 parser.add_argument('--train', action='store_true')
 parser.add_argument('--test', action='store_true')
 parser.add_argument('--epoch', default=10,type=int)
+parser.add_argument('--text', action='store_true')
+parser.add_argument('--img', action='store_true')
 parser.add_argument('--text_pretrained_model', default='bert-base-uncased', type=str)
 parser.add_argument('--model_path', default=None, type=str)
 args = parser.parse_args()
 
 weight_decay = 1e-2 #衰减系数
 learning_rate = args.lr
+way = 'text' if args.text else None
+way = 'img' if args.img else None
+if args.text and args.img: 
+    way = None
 epoch = args.epoch
 bert_name = args.text_pretrained_model
 model_path = args.model_path
@@ -351,7 +367,7 @@ test_params = {'batch_size': 8, 'shuffle': False}
 def train():
     formating(os.path.join(root_path, 'train.txt'),
                 os.path.join(root_path, './data'), os.path.join(root_path, './data/train.json'))
-    data = listing(train_path)
+    data = listing(way,train_path)
     train_data, val_data = train_test_split(data, train_size=(0.8), test_size=0.2)
     train_loader = processor(train_data, train_params)
     val_loader = processor(val_data, val_params)
@@ -371,7 +387,7 @@ def train():
 
 def test():
     formating(os.path.join(root_path, 'test_without_label.txt'),os.path.join(root_path, './data'), os.path.join(root_path, './data/test.json'))
-    test_data = listing(test_path)
+    test_data = listing(way,test_path)
     test_loader = processor(test_data, test_params)   
     if model_path is not None:
         model.load_state_dict(torch.load(model_path))
