@@ -37,13 +37,17 @@ conda install --yes --file requirements.txt
 仓库中有requirements.txt记录了当前程序的所有依赖包及其精确版本号，使用上述命令其中之一可配置相同环境。
 
 ## 演示
-在main.py根目录下输入下述命令
+在main.py根目录下输入下述命令（在GPU下10个epoch大概需要12分钟，需要耐心等待）
 
-训练
-`python main.py --train --epoch 10`
+text与img训练
+`python main.py --text --img --train --epoch 10`·
+
+消融
+`python main.py --text --train --epoch 10`
+`python main.py --img --train --epoch 10`
 
 预测
-`python main.py --test --model_path ./output/mymodel.bin`
+`python main.py --model_path ./output/mymodel.bin --test`
 
 ## 文件结构
 ```
@@ -58,4 +62,12 @@ conda install --yes --file requirements.txt
 ```
 
 ## 实验结果
-验证集预测值：0.68
+```
+多模态融合模型在验证集上的结果：0.68
+```
+```
+消融实验结果:
+text：0.62
+img：0.58
+```
+
